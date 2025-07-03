@@ -1,5 +1,3 @@
-# YOU CAN MODIFY THIS FILE IF YOU LIKE.
-
 import numpy as np
 import kinpy as kp
 from scipy.spatial.transform import Rotation as R
@@ -60,8 +58,6 @@ class UR5e(RASRobot):
         if len(target_joint_pos) != len(self.motors):
             raise ValueError('target joint configuration has unexpected length')
             
-        print('moving robot to desired target configuration...')
-            
         abs_diffs = np.abs(target_joint_pos - self.joint_pos())
         velocity_gains = abs_diffs / np.max(abs_diffs)
             
@@ -74,11 +70,10 @@ class UR5e(RASRobot):
             self.step()
 
             # check if the robot is close enough to the target position
-            if all(abs(target_joint_pos - self.joint_pos()) < 0.002):
-                print('...reached.')
+            if all(abs(target_joint_pos - self.joint_pos()) < 0.001):
                 return True
                 
-        print('Timeout! Robot has not reached the desired target configuration.')
+        print('Timeout. Robot has not reached the desired target position.')
         return False
         
     def forward_kinematics(self, joint_pos=None):
@@ -90,8 +85,8 @@ class UR5e(RASRobot):
         """
         if joint_pos is None:
             joint_pos = self.joint_pos()
-            
-        ee_pose = self.chain.forward_kinematics(joint_pos)
+
+        ee_pose = self.chain.forward_kinematics(joint_pos.tolist())
         return ee_pose
         
     def inverse_kinematics(self, target_pose):
@@ -102,5 +97,5 @@ class UR5e(RASRobot):
         :param target_pose: kinpy.Transform, pose of the end link of the chain
         :return: list/ndarray, joint position
         """
-        ik_result = self.chain.inverse_kinematics(target_pose, self.joint_pos())
+        ik_result = self.chain.inverse_kinematics(target_pose, self.joint_pos().tolist())
         return ik_result

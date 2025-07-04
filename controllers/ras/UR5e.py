@@ -22,9 +22,7 @@ class UR5e(RASRobot):
         end_link = 'TCP'  # link used for forward and inverse kinematics
         # TCP = Tool Center Point - this is the point between the fingers
         URDF_FN = '../../resources/ur5e_2f85_camera.urdf'
-        with open(URDF_FN, 'r') as f:
-            urdf_content = f.read()
-        self.chain = kp.build_serial_chain_from_urdf(urdf_content, end_link)
+        self.chain = kp.build_serial_chain_from_urdf(open(URDF_FN), end_link)
         
         # print chain on console
         print('kinematic chain:')
